@@ -22,7 +22,6 @@ app.get("/api/user/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
     const userd = await User.findById(userId);
-    console.log(userd);
     res.send({
       status: 200,
       message: userd ? "Fetch one user data." : "invalid userId provided",
@@ -65,10 +64,10 @@ app.delete("/api/user/:userId", async (req, res) => {
 app.patch('/api/user', async (req,res)=>{
     const data = req.body;
     try{
-        const updateUser = await User.findByIdAndUpdate(req.body.userId, data, {returnDocument:'after'} )
+        const updateUser = await User.findByIdAndUpdate(req.body.userId, data, {returnDocument:'after', runValidators:true} )
         res.send({status:200, message:updateUser})
     }catch(e){
-        res.send({status:400, message:e.message})
+        res.status(400).send({status:400, message:e.message})
     }
 })
 
