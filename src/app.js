@@ -2,20 +2,14 @@ const express = require("express");
 
 const app = express(); // app is the instance of express
 
-app.get("/user", (req,res)=>{
-    res.send({status:200, message:"get all users"})
-})
-app.post('/user',(req,res)=>{
-    res.send({status:200,message:"Post method called"})
-})
-app.put('/user',(req,res)=>{
-    res.send({status:200,message:"Post method put"})
-})
+const firstM = (req,res, next) =>{
+   next();
+}
 
-app.delete('/user',(req,res)=>{
-    res.send({status:200,message:"User Deleted successfully!"})
-})
-
+const secondM = (req,res) =>{
+    res.send({message:"secondMsecondM...."})    
+}
+app.use('/user', firstM, secondM) // "user" route handler
 app.listen(7777, () => {
   console.log("dev tinder is running on port 7777");
 });
