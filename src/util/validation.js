@@ -7,10 +7,10 @@ const validateSignupData = (req) => {
     throw new Error("firstName should be 4-50 character.");
   } else if (!validator.isEmail(email)) {
     throw new Error("email is not valid.");
-  }
-  //   else if (!validator.isStrongPassword(password)) {
-  // throw new Error("Please enter a strong password.");
-  //   }
+  } 
+  // else if (!validator.isStrongPassword(password)) {
+  //   throw new Error("Please enter a strong password.");
+  // }
 };
 
 const validateLoginData = (req) => {
