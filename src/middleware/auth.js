@@ -2,11 +2,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 const userAuth = async (req, res, next) => {
-  //read the token from the req.cookies
   const userId = req.params.userId;
+  // console.log(userId)
+  //read the token from the req.cookies
   try {
     const { jwttoken } = req.cookies;
-    // console.log(jwttoken)
     if (!jwttoken) {
       throw new Error("Invalid token");
     }
@@ -15,9 +15,6 @@ const userAuth = async (req, res, next) => {
     const userd = await User.findById(_id);
     if (!userd) {
       throw new Error("user doesn't exist, please login again..");
-    }
-    if (userd._id !== userId) {
-      throw new Error("Unauthorized user.");
     }
     req.user = userd;
     next();

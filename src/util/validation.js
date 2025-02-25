@@ -7,7 +7,7 @@ const validateSignupData = (req) => {
     throw new Error("firstName should be 4-50 character.");
   } else if (!validator.isEmail(email)) {
     throw new Error("email is not valid.");
-  } 
+  }
   // else if (!validator.isStrongPassword(password)) {
   //   throw new Error("Please enter a strong password.");
   // }
@@ -21,4 +21,25 @@ const validateLoginData = (req) => {
     throw new Error("email is not valid.");
   }
 };
-module.exports = { validateSignupData, validateLoginData };
+
+const validateEditProfileData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "email",
+    "photoUrl",
+    "age",
+    "gender",
+    "about",
+    "skills",
+  ];
+  const isValid = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field)
+  );
+  return isValid;
+};
+module.exports = {
+  validateSignupData,
+  validateLoginData,
+  validateEditProfileData,
+};
