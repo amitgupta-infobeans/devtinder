@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const validator = require("validator")
 const userSchema = mongoose.Schema(
   {
     firstName: {
@@ -17,6 +17,11 @@ const userSchema = mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value){
+        if(!validator.isEmail(value)){
+            throw new Error("Email is not valid..")
+        }
+      }
     },
     password: {
       type: String,
@@ -24,12 +29,10 @@ const userSchema = mongoose.Schema(
     },
     age: {
       type: Number,
-      required: true,
       min: 18, // for number we use min and for string we use minLength.
     },
     gender: {
       type: String,
-      required: true,
       validate(value) {
         //validate only call when new document is inserted.. but not in case of update document, for update we need to add option in update API.
         if (!["male", "female", "other"].includes(value)) {
@@ -41,6 +44,11 @@ const userSchema = mongoose.Schema(
       type: String,
       default:
         "https://fastly.picsum.photos/id/64/4326/2884.jpg?hmac=9_SzX666YRpR_fOyYStXpfSiJ_edO3ghlSRnH2w09Kg",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("photo url is not valid..")
+            }
+        }
     },
     about: {
       type: String,

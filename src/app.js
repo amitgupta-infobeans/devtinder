@@ -1,5 +1,5 @@
 const express = require("express");
-require("./config/database");
+// require("./config/database");
 const User = require("./models/user");
 const connectDB = require("./config/database");
 const app = express(); // app is the instance of express
@@ -8,8 +8,12 @@ app.use(express.json()); //middleware...
 
 // SIGNUP API..
 app.post("/api/signup", async (req, res) => {
+    // Validate data..
+    
+    //Encrypt the Password:
+
+  const userD = new User(req.body);
   try {
-    const userD = new User(req.body);
     const ud = await userD.save();
     res.send({ status: 200, data: [ud] });
   } catch (er) {
@@ -51,28 +55,43 @@ app.delete("/api/user/:userId", async (req, res) => {
   try {
     const existUser = await User.findByIdAndDelete(req.params.userId);
     if (existUser) {
-        res.send({status:200, message:"User Deleted Successfully"})
-    }else{
-        res.send({status:400, message:"Invalid userId provided"})
+      res.send({ status: 200, message: "User Deleted Successfully" });
+    } else {
+      res.send({ status: 400, message: "Invalid userId provided" });
     }
   } catch (e) {
-    res.send({status:400, message:e.message})
+    res.send({ status: 400, message: e.message });
   }
 });
 
 // UPDATE USER BY PATCH
-app.patch('/api/user', async (req,res)=>{
-    const data = req.body;
-    try{
-        const updateUser = await User.findByIdAndUpdate(req.body.userId, data, {returnDocument:'after', runValidators:true} )
-        res.send({status:200, message:updateUser})
-    }catch(e){
-        res.status(400).send({status:400, message:e.message})
+app.patch("/api/user", async (req, res) => {
+  const data = req.body;
+
+  try {
+    const ALLOWED_UPDATES = [
+      "userId",
+      "skills",
+      "age",
+      "about",
+      "photoUrl",
+      "gender",
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
     }
-})
-
-
-
+    const updateUser = await User.findByIdAndUpdate(req.body.userId, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    res.send({ status: 200, message: updateUser });
+  } catch (e) {
+    res.status(400).send({ status: 400, message: e.message });
+  }
+});
 
 connectDB()
   .then(() => {
