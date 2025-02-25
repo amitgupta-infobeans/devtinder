@@ -1,23 +1,50 @@
 const express = require("express");
-// require("./config/database");
 const User = require("./models/user");
 const connectDB = require("./config/database");
+const { validateSignupData, validateLoginData } = require("./util/validation");
+const bcrypt = require("bcrypt");
 const app = express(); // app is the instance of express
 
 app.use(express.json()); //middleware...
 
 // SIGNUP API..
 app.post("/api/signup", async (req, res) => {
-    // Validate data..
-    
-    //Encrypt the Password:
-
-  const userD = new User(req.body);
   try {
+    // Validate data..
+    validateSignupData(req);
+    //Encrypt the Password:
+    const { firstName, lastName, email, password } = req.body;
+    const passwordHashed = await bcrypt.hash(password, 10);
+    const userD = new User({
+      firstName: firstName,
+      lastName: lastName,
+      password: passwordHashed,
+      email: email,
+    });
     const ud = await userD.save();
     res.send({ status: 200, data: [ud] });
   } catch (er) {
-    res.send({ status: 501, message: er.message });
+    res.status(400).send({ status: 501, message: er.message });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    //valdiate login data
+    validateLoginData(req);
+    const userObj = await User.findOne({ email: email });
+    if (!userObj) {
+      throw new Error("invalid credentials.");
+    }
+    const isPasswordValid = await bcrypt.compare(password, userObj.password);
+    if (isPasswordValid) {
+      res.send({ status: 200, message: "Login successfully.", data: userObj });
+    } else {
+      throw new Error("invalid credentials.");
+    }
+  } catch (e) {
+    res.status(400).send({ status: 400, message: e.message });
   }
 });
 
