@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
   try {
     const { jwttoken } = req.cookies;
     if (!jwttoken) {
-      throw new Error("Invalid token");
+      throw new Error("Token has expired");
     }
     const decodedJwt = await jwt.verify(jwttoken, "secret-key-Dev-TinerD@4$*2");
     const { _id } = decodedJwt;
