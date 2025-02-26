@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validator = require("validator")
+const validator = require("validator");
 const userSchema = mongoose.Schema(
   {
     firstName: {
@@ -14,14 +14,15 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      // index: true, we can add this line in place of unique:true
+      unique: true, // it will create index automatically for email field.
       lowercase: true,
       trim: true,
-      validate(value){
-        if(!validator.isEmail(value)){
-            throw new Error("Email is not valid..")
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is not valid..");
         }
-      }
+      },
     },
     password: {
       type: String,
@@ -44,11 +45,11 @@ const userSchema = mongoose.Schema(
       type: String,
       default:
         "https://fastly.picsum.photos/id/64/4326/2884.jpg?hmac=9_SzX666YRpR_fOyYStXpfSiJ_edO3ghlSRnH2w09Kg",
-        validate(value){
-            if(!validator.isURL(value)){
-                throw new Error("photo url is not valid..")
-            }
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("photo url is not valid..");
         }
+      },
     },
     about: {
       type: String,
@@ -56,7 +57,6 @@ const userSchema = mongoose.Schema(
     },
     skills: {
       type: [String],
-      
     },
   },
   {

@@ -1,8 +1,7 @@
 // requestRouter
-// POST /request/send/intrested/:userId
-// POST /request/send/ignore/:userId
-// POST /request/review/accepted/:requestId
-// POST /request/review/rejected/:requestId
+// POST /request/send/:status/:userId    (status:  interested, ignored)
+// POST /request/review/:status/:requestId  (status:  accepted, rejected)
+
 const { userAuth } = require("../middleware/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
@@ -17,7 +16,7 @@ requestRouter.post(
     try {
       const fromUserId = req.user._id;
       const { toUserId, status } = req.params;
-      const allowedStatus = ["ignored", "intrested"];
+      const allowedStatus = ["ignored", "interested"];
       if (!allowedStatus.includes(status)) {
         return res
           .status(400)
@@ -55,6 +54,41 @@ requestRouter.post(
         message: "connection send successfully",
         data: data,
       });
+    } catch (e) {
+      res.status(400).send({ status: 400, message: e.message });
+    }
+  }
+);
+
+requestRouter.post(
+  "/api/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+      const allowedStatus = ["accepted", "rejected"];
+      // validate status.
+      if (!allowedStatus.includes(status)) {
+        return res
+          .status(400)
+          .json({ status: 400, message: "Invalid status type." });
+      }
+      //valdiate requestId.
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!connectionRequest) {
+        return res
+          .status(404)
+          .json({ status: 404, message: "Connection request not found." });
+      }
+      connectionRequest.status = status;
+      await connectionRequest.save();
+
+      res.status(200).json({ status: 200, message: "Request accepted.." });
     } catch (e) {
       res.status(400).send({ status: 400, message: e.message });
     }

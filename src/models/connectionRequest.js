@@ -5,6 +5,7 @@ const connectionRequest = new mongoose.Schema(
     fromUserId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "user",  //creating reference to the user Collection
     },
     toUserId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +14,7 @@ const connectionRequest = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["ignored", "intrested", "accepted", "rejected"],
+        values: ["ignored", "interested", "accepted", "rejected"],
         message: `{VALUE} is incorrect status type.`,
       },
     },
@@ -22,6 +23,9 @@ const connectionRequest = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+//compound index...
+connectionRequest.index({ fromUserId: 1, toUserId: 1 });
 
 // middleware run before save..
 connectionRequest.pre("save", function (next) {
