@@ -11,13 +11,13 @@ const profileRouter = express();
 // GET ONE USER API BY ID
 profileRouter.get("/api/profile", userAuth, async (req, res) => {
   try {
-    res.send({
+    res.status(200).json({
       status: 200,
       message: "Profile fetched successfully.",
       data: [req.user],
     });
   } catch (e) {
-    res.send({ status: 501, message: e.message });
+    res.status(501).json({ status: 501, message: e.message });
   }
 });
 

@@ -21,7 +21,7 @@ authRouter.post("/api/signup", async (req, res) => {
       email: email,
     });
     const ud = await userD.save();
-    res.send({ status: 200, data: [ud] });
+    res.status(200).json({ status: 200, data: [ud] });
   } catch (er) {
     res.status(400).send({ status: 501, message: er.message });
   }
@@ -47,7 +47,7 @@ authRouter.post("/api/login", async (req, res) => {
         res.cookie("jwttoken", token, {
           expires: new Date(Date.now() + 8 * 360000),
         });
-        res.send({ status: 200, message: "Login successfully.", data: userObj });
+        res.status(200).json({ status: 200, message: "Login successfully.", data: userObj });
       } else {
         throw new Error("invalid credentials.");
       }
