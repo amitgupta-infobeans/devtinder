@@ -3,7 +3,10 @@ const connectDB = require("./config/database");
 const app = express(); // app is the instance of express
 const cookieParse = require("cookie-parser");
 const cors = require("cors");
-app.use(cors());
+app.use(cors({
+  origin:"http://localhost:5173",  //so this is for whitelisting 
+  credentials:true
+}));
 app.use(express.json()); //middleware...
 app.use(cookieParse());
 const authRouter = require("./routes/auth");
