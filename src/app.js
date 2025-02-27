@@ -2,6 +2,8 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express(); // app is the instance of express
 const cookieParse = require("cookie-parser");
+const cors = require("cors");
+app.use(cors());
 app.use(express.json()); //middleware...
 app.use(cookieParse());
 const authRouter = require("./routes/auth");
