@@ -1,6 +1,6 @@
 // requestRouter
-// POST /request/send/:status/:userId    (status:  interested, ignored)
-// POST /request/review/:status/:requestId  (status:  accepted, rejected)
+// POST /request/send/:status/:userId    (status:  interested, OR ignored)
+// POST /request/review/:status/:requestId  (status:  accepted, OR rejected)
 
 const { userAuth } = require("../middleware/auth");
 const ConnectionRequest = require("../models/connectionRequest");
@@ -23,7 +23,7 @@ requestRouter.post(
           .json({ message: "invalid status type", status: 400 });
       }
 
-      //check if there is an existing connection request...
+      //check if connection request already sent.
       const existingConnectionReqest = await ConnectionRequest.findOne({
         $or: [
           { fromUserId, toUserId },
@@ -33,7 +33,7 @@ requestRouter.post(
       if (existingConnectionReqest) {
         return res
           .status(400)
-          .json({ message: "Connection request already exist.", status: 400 });
+          .json({ message: "Connection request already sent.", status: 400 });
       }
       // validate toUserId is exist in DB...
       const toUserIdExistInDb = await User.findById(toUserId);
@@ -48,14 +48,13 @@ requestRouter.post(
         status,
       });
       const data = await connectionRequest.save();
-      //res.json({status:200, message:"connection send successfully", data:data});
-      res.status(200).send({
+      res.status(200).json({
         status: 200,
         message: "connection send successfully",
         data: data,
       });
     } catch (e) {
-      res.status(400).send({ status: 400, message: e.message });
+      res.status(400).json({ status: 400, message: e.message });
     }
   }
 );
@@ -90,7 +89,7 @@ requestRouter.post(
 
       res.status(200).json({ status: 200, message: "Request accepted.." });
     } catch (e) {
-      res.status(400).send({ status: 400, message: e.message });
+      res.status(400).json({ status: 400, message: e.message });
     }
   }
 );

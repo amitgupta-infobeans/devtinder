@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+require('dotenv').config()
+
 const userSchema = mongoose.Schema(
   {
     firstName: {
@@ -15,7 +17,8 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       // index: true, we can add this line in place of unique:true
-      unique: true, // it will create index automatically for email field.
+     // unique: true, // it will create index automatically for email field.
+      unique: [true, "email is already taken by someone else."],
       lowercase: true,
       trim: true,
       validate(value) {
@@ -43,8 +46,7 @@ const userSchema = mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      default:
-        "https://fastly.picsum.photos/id/64/4326/2884.jpg?hmac=9_SzX666YRpR_fOyYStXpfSiJ_edO3ghlSRnH2w09Kg",
+      default: process.env.DUMMY_IMAGE,        
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("photo url is not valid..");

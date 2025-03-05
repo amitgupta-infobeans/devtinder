@@ -1,16 +1,15 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+require("dotenv").config();
 
 const userAuth = async (req, res, next) => {
-  const userId = req.params.userId;
-  // console.log(userId)
   //read the token from the req.cookies
   try {
     const { jwttoken } = req.cookies;
     if (!jwttoken) {
-      throw new Error("Token has expired");
+     return res.status(401).send({ status: 401, message: "Token has expired" });
     }
-    const decodedJwt = await jwt.verify(jwttoken, "secret-key-Dev-TinerD@4$*2");
+    const decodedJwt = await jwt.verify(jwttoken, process.env.SECRET_KEY);
     const { _id } = decodedJwt;
     const userd = await User.findById(_id);
     if (!userd) {
